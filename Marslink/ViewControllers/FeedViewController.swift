@@ -4,6 +4,7 @@ import IGListKit
 class FeedViewController: UIViewController {
 
     let loader = JournalEntryLoader()
+    let pathfinder = Pathfinder()
 
     let collectionView: IGListCollectionView = {
         let view = IGListCollectionView(frame: CGRect.zero, collectionViewLayout: UICollectionViewFlowLayout())
@@ -32,11 +33,17 @@ class FeedViewController: UIViewController {
 extension FeedViewController: IGListAdapterDataSource {
 
     func objects(for listAdapter: IGListAdapter) -> [IGListDiffable] {
-        return loader.entries
+        var items: [IGListDiffable] = pathfinder.messages
+        items += loader.entries as [IGListDiffable]
+        return items
     }
 
     func listAdapter(_ listAdapter: IGListAdapter, sectionControllerFor object: Any) -> IGListSectionController {
-        return JournalSectionController()
+        if object is Message {
+            return MessageSectionController()
+        } else {
+            return JournalSectionController()
+        }
     }
 
     func emptyView(for listAdapter: IGListAdapter) -> UIView? {
